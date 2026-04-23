@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartContact · Willow Properties · Erika</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a1628;
+  --navy2: #111e35;
+  --bg: #f5f4f1;
+  --white: #ffffff;
+  --accent: #0f4c81;
+  --gold: #c8992a;
+  --red: #d63f3f;
+  --amber: #df8b29;
+  --green: #2a8c5a;
+  --purple: #6d4aad;
+  --orange: #c2410c;
+  --text: #1a1a2e;
+  --muted: #6b7280;
+  --border: #e4e1dc;
+  --r: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+button { font-family: 'DM Sans', sans-serif; }
+
+/* ─── KEY SCREEN ─── */
+#key-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100vh; background: var(--navy); padding: 40px 24px;
+}
+#key-screen .logo { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #fff; }
+#key-screen .logo em { color: var(--gold); font-style: normal; }
+#key-screen .brand { font-size: 11px; color: var(--gold); letter-spacing: .15em; text-transform: uppercase; margin: 4px 0 24px; }
+#key-screen p { color: #94a3b8; font-size: 14px; text-align: center; max-width: 320px; line-height: 1.6; margin-bottom: 28px; }
+#key-input {
+  width: 100%; max-width: 360px; padding: 13px 16px; border-radius: 10px;
+  border: 1px solid #1e3a5f; background: var(--navy2); color: #fff;
+  font-family: monospace; font-size: 14px; margin-bottom: 10px; outline: none;
+}
+#key-input:focus { border-color: var(--accent); }
+#key-go {
+  width: 100%; max-width: 360px; padding: 13px; border-radius: 10px;
+  background: var(--accent); color: #fff; font-size: 15px; font-weight: 600;
+  border: none; cursor: pointer;
+}
+#key-err { color: #f87171; font-size: 13px; margin-top: 8px; display: none; }
+#key-note { color: #334155; font-size: 12px; margin-top: 16px; }
+
+/* ─── APP ─── */
+#app { display: block; padding-bottom: 80px; }
+
+/* HEADER */
+.hdr { background: var(--navy); padding: 14px 16px 0; position: sticky; top: 0; z-index: 100; }
+.hdr-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.hdr-logo { font-family: 'DM Serif Display', serif; color: #fff; font-size: 1.1rem; }
+.hdr-logo em { color: var(--gold); font-style: normal; }
+.hdr-brand { font-size: 9px; color: var(--gold); letter-spacing: .12em; text-transform: uppercase; }
+.hdr-btns { display: flex; gap: 6px; }
+.hdr-btn { background: none; border: 1px solid #1e3a5f; color: #64748b; font-size: 11px; padding: 4px 9px; border-radius: 6px; cursor: pointer; }
+.hdr-btn:hover { color: #94a3b8; }
+
+/* ALERT BANNER */
+.alert-banner { display: none; background: #1e3a5f; border-left: 3px solid var(--gold); padding: 8px 16px; font-size: 12px; color: #e2e8f0; gap: 6px; flex-direction: column; }
+.alert-banner.on { display: flex; }
+.alert-row { display: flex; align-items: center; gap: 6px; }
+.alert-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+/* STATS */
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 12px; }
+.stat { background: var(--navy2); border-radius: 9px; padding: 8px 4px; text-align: center; }
+.stat-n { font-family: 'DM Serif Display', serif; font-size: 1.35rem; font-weight: 700; }
+.stat-n.r { color: var(--red); }
+.stat-n.a { color: var(--amber); }
+.stat-n.g { color: #4ade80; }
+.stat-n.w { color: #fff; }
+.stat-l { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
+
+/* TABS */
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { padding: 7px 12px; border-radius: 18px 18px 0 0; font-size: 12px; font-weight: 500; border: none; cursor: pointer; background: var(--navy2); color: #64748b; white-space: nowrap; }
+.tab.on { background: var(--bg); color: var(--text); }
+.tdot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 3px; }
+
+/* TOOLBAR */
+.toolbar { display: flex; gap: 8px; padding: 10px 14px 4px; }
+.t-btn { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; }
+.t-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* LIST */
+.list { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.empty { text-align: center; color: var(--muted); font-size: 14px; padding: 48px 24px; }
+
+/* CARD */
+.card { background: var(--white); border-radius: var(--r); border: 1.5px solid var(--border); overflow: hidden; }
+.card.urgent { border-left: 4px solid var(--red); }
+.card.soon { border-left: 4px solid var(--amber); }
+.card.done { border-left: 4px solid var(--green); opacity: .75; }
+
+.card-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 11px 11px 6px; }
+.card-name { font-weight: 700; font-size: 15px; }
+.card-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.card-phone { font-size: 11px; color: var(--accent); margin-top: 1px; }
+.badge { font-size: 10px; font-weight: 700; letter-spacing: .05em; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; }
+.badge.r { background: #fef2f2; color: var(--red); }
+.badge.a { background: #fffbeb; color: var(--amber); }
+.badge.g { background: #f0fdf4; color: var(--green); }
+
+/* SCORE BAR */
+.score-wrap { display: flex; align-items: center; gap: 8px; padding: 0 11px 7px; }
+.score-bg { flex: 1; height: 4px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+.score-fill { height: 100%; border-radius: 99px; transition: width .3s; }
+.score-num { font-size: 11px; font-weight: 700; min-width: 22px; text-align: right; }
+
+/* STAGES */
+.stages { display: flex; gap: 4px; padding: 0 11px 7px; overflow-x: auto; scrollbar-width: none; }
+.stages::-webkit-scrollbar { display: none; }
+.sp { font-size: 10px; padding: 3px 8px; border-radius: 20px; border: 1px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; white-space: nowrap; }
+.sp.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* FLAG */
+.flag { margin: 0 11px 7px; padding: 6px 10px; border-radius: 7px; font-size: 12px; border-left: 3px solid var(--amber); background: #fff8f0; color: #92400e; }
+.flag.r { border-left-color: var(--red); background: #fff5f5; color: #991b1b; }
+.flag.g { border-left-color: var(--green); background: #f0fdf4; color: #166534; }
+
+/* FOLLOWUP */
+.fu-row { display: flex; align-items: center; gap: 6px; padding: 0 11px 7px; font-size: 11px; color: var(--muted); }
+.fu-row input { padding: 3px 7px; border-radius: 6px; border: 1px solid var(--border); font-size: 11px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; }
+
+/* ACTION ROWS */
+.acts { display: flex; gap: 5px; padding: 0 11px 7px; flex-wrap: wrap; }
+.ab { padding: 7px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+.ab:disabled { opacity: .5; cursor: not-allowed; }
+.ab.primary { background: var(--navy); color: #fff; flex: 1; justify-content: center; }
+.ab.call { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--green); text-decoration: none; }
+.ab.mark { background: #f8faff; border: 1px solid #dbeafe; color: var(--accent); }
+.ab.mark.on { background: #f0fdf4; border-color: #bbf7d0; color: var(--green); }
+.ab.edit { background: #f8f8f8; border: 1px solid #e5e2dd; color: var(--muted); }
+.ab.market { background: #faf5ff; border: 1px solid #e9d5ff; color: var(--purple); }
+.ab.coach { background: #fff7ed; border: 1px solid #fed7aa; color: var(--orange); }
+.ab.email { background: #f0f9ff; border: 1px solid #bae6fd; color: #0369a1; text-decoration: none; }
+.ab.anniv { background: #fff0f6; border: 1px solid #fbc8dc; color: #be185d; }
+.ab.sms { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--green); text-decoration: none; }
+
+/* DIGEST MODAL */
+.digest-box { background: #f8faff; border: 1px solid #dbeafe; border-radius: 10px; padding: 14px; margin: 0 0 12px; font-size: 13px; line-height: 1.7; color: #1e3a6e; white-space: pre-wrap; max-height: 320px; overflow-y: auto; }
+.digest-note { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+
+/* OBJECTION INPUT */
+.obj-row { display: none; gap: 6px; padding: 0 11px 7px; }
+.obj-row.on { display: flex; }
+.obj-in { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1.5px solid #fed7aa; font-size: 12px; font-family: 'DM Sans', sans-serif; outline: none; }
+.obj-go { padding: 8px 12px; border-radius: 8px; background: var(--orange); color: #fff; font-size: 12px; font-weight: 600; border: none; cursor: pointer; }
+
+/* DRAFT */
+.draft-tabs { display: flex; gap: 5px; padding: 0 11px 5px; }
+.dt { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: none; cursor: pointer; background: #f1f5f9; color: var(--muted); }
+.dt.on { background: var(--accent); color: #fff; }
+.draft-out { display: none; margin: 0 11px 11px; padding: 10px 12px; border-radius: 9px; background: #f8faff; border: 1px solid #dbeafe; font-size: 13px; line-height: 1.65; color: #1e3a6e; white-space: pre-wrap; }
+.draft-out.on { display: block; }
+.copy-btn { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; color: var(--accent); background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; }
+
+/* FAB */
+.fab { position: fixed; bottom: 22px; right: 18px; width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 26px; border: none; cursor: pointer; box-shadow: 0 4px 18px rgba(15,76,129,.45); z-index: 200; display: flex; align-items: center; justify-content: center; line-height: 1; }
+
+/* MODAL */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 300; display: none; align-items: flex-end; justify-content: center; }
+.overlay.on { display: flex; }
+.modal { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 520px; padding: 22px 18px 36px; max-height: 88vh; overflow-y: auto; }
+.modal-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: 14px; }
+.fg { margin-bottom: 9px; }
+.fg label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.fi { width: 100%; padding: 9px 11px; border-radius: 8px; border: 1.5px solid var(--border); font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; background: #fff; }
+.fi:focus { border-color: var(--accent); }
+.fg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 9px; }
+.modal-acts { display: flex; gap: 8px; margin-top: 14px; }
+.m-save { flex: 1; padding: 11px; border-radius: 9px; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
+.m-cancel { padding: 11px 16px; border-radius: 9px; background: #f1f5f9; color: var(--muted); font-size: 14px; border: none; cursor: pointer; }
+.m-del { padding: 11px 14px; border-radius: 9px; background: #fef2f2; color: var(--red); font-size: 14px; border: none; cursor: pointer; display: none; }
+
+.footer { text-align: center; padding: 12px; font-size: 11px; color: #94a3b8; letter-spacing: .05em; }
+.footer strong { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- KEY SCREEN -->
+<div id="key-screen" style="display:none">
+  <div class="logo">Smart<em>Contact</em></div>
+  <div class="brand">Willow Properties · Erika</div>
+  <p>AI-powered contact prioritization for real estate agents. Enter your Anthropic API key to get started.</p>
+  <input id="key-input" type="password" placeholder="sk-ant-..." autocomplete="off">
+  <button id="key-go">Get Started →</button>
+  <div id="key-err">Invalid key — should start with sk-ant-</div>
+  <div id="key-note">Stored locally · Never shared</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-top">
+      <div>
+        <div class="hdr-logo">Smart<em>Contact</em></div>
+        <div class="hdr-brand">Willow Properties · Erika</div>
+      </div>
+      <div class="hdr-btns">
+      </div>
+    </div>
+    <div class="alert-banner" id="alert-banner"></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n r" id="s-urg">0</div><div class="stat-l">Urgent</div></div>
+      <div class="stat"><div class="stat-n a" id="s-soon">0</div><div class="stat-l">Soon</div></div>
+      <div class="stat"><div class="stat-n g" id="s-done">0</div><div class="stat-l">Done</div></div>
+      <div class="stat"><div class="stat-n w" id="s-total">0</div><div class="stat-l">Total</div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab on" onclick="setTab('all',this)">All</button>
+      <button class="tab" onclick="setTab('week',this)"><span class="tdot" style="background:var(--red)"></span>Urgent</button>
+      <button class="tab" onclick="setTab('soon',this)"><span class="tdot" style="background:var(--amber)"></span>Soon</button>
+      <button class="tab" onclick="setTab('done',this)"><span class="tdot" style="background:#4ade80"></span>Done</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="t-btn" onclick="exportCSV()">⬇ Export Backup</button>
+    <button class="t-btn" onclick="document.getElementById('imp').click()">⬆ Import</button>
+    <button class="t-btn" onclick="openDigest()">📬 Daily Digest</button>
+    <input type="file" id="imp" accept=".csv" style="display:none" onchange="importCSV(event)">
+  </div>
+
+  <div class="list" id="list"></div>
+  <div class="footer">Smart<strong>Contact</strong> · <strong>Willow Properties · Erika</strong> · Powered by Claude AI</div>
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="openModal(null)">+</button>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="bgClose(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Add Contact</div>
+    <div class="fg2">
+      <div class="fg"><label>Full Name *</label><input class="fi" id="m-name" placeholder="Jane Smith"></div>
+      <div class="fg"><label>Phone</label><input class="fi" id="m-phone" type="tel" placeholder="(555) 000-0000"></div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label>Type</label>
+        <select class="fi" id="m-type">
+          <option>Active Buyer</option><option>Seller</option><option>Past Client</option><option>Lead</option><option>Investor</option>
+        </select>
+      </div>
+      <div class="fg"><label>Deal Stage</label>
+        <select class="fi" id="m-stage">
+          <option value="First Contact">First Contact</option>
+          <option value="Active">Active</option>
+          <option value="Under Contract">Under Contract</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label>Days Since Contact</label><input class="fi" id="m-days" type="number" min="0" placeholder="0"></div>
+      <div class="fg"><label>Priority</label>
+        <select class="fi" id="m-pri">
+          <option value="week">This Week (Urgent)</option>
+          <option value="soon">Soon</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Email</label><input class="fi" id="m-email" type="email" placeholder="client@email.com"></div>
+    <div class="fg"><label>Urgency Reason</label><input class="fi" id="m-flag" placeholder="e.g. Pre-approval expires in 3 weeks"></div>
+    <div class="fg"><label>Birthday / Anniversary</label><input class="fi" id="m-date" type="date"></div>
+    <div class="modal-acts">
+      <button class="m-save" onclick="saveModal()">Save Contact</button>
+      <button class="m-cancel" onclick="closeModal()">Cancel</button>
+      <button class="m-del" id="m-del" onclick="deleteContact()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIGEST MODAL -->
+<div class="overlay" id="digest-overlay" onclick="bgCloseDigest(event)">
+  <div class="modal">
+    <div class="modal-title">📬 Your Daily Digest</div>
+    <div class="digest-note">Copy this and email it to yourself each morning — your personal follow-up briefing.</div>
+    <div class="digest-box" id="digest-content">Generating your digest…</div>
+    <div class="modal-acts">
+      <button class="m-save" onclick="copyDigest()">Copy Digest</button>
+      <button class="m-cancel" onclick="closeDigest()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STAGES = ['First Contact','Active','Under Contract','Closed'];
+
+const SEED = [
+  {id:1,name:'Sarah Mitchell',phone:'5550001111',email:'sarah.mitchell@email.com',type:'Active Buyer',stage:'Active',days:8,pri:'week',flag:'Pre-approval expires in 3 weeks',date:'',fu:'',done:false,doneAt:null},
+  {id:2,name:'Tom & Lisa Gerardi',phone:'5550002222',email:'tgerardi@gmail.com',type:'Seller',stage:'Active',days:5,pri:'week',flag:'No showings in 9 days',date:'',fu:'',done:false,doneAt:null},
+  {id:3,name:'Marcus Webb',phone:'5550003333',email:'marcus.webb@outlook.com',type:'Past Client',stage:'Closed',days:21,pri:'soon',flag:'Anniversary in 2 weeks — referral opportunity',date:'2026-04-23',fu:'',done:false,doneAt:null},
+  {id:4,name:'Priya Nolan',phone:'5550004444',email:'priya.nolan@email.com',type:'Active Buyer',stage:'Active',days:12,pri:'week',flag:'Rate lock expires soon',date:'',fu:'',done:false,doneAt:null},
+  {id:5,name:'James & Carol Okafor',phone:'5550005555',email:'jokafor@email.com',type:'Seller',stage:'Active',days:30,pri:'soon',flag:'Price reduction discussion overdue',date:'',fu:'',done:false,doneAt:null},
+  {id:6,name:'Dana Fiorentino',phone:'5550006666',email:'dana.f@gmail.com',type:'Lead',stage:'First Contact',days:3,pri:'soon',flag:'Requested info, no follow-up yet',date:'',fu:'',done:false,doneAt:null},
+];
+
+function loadContacts() {
+  return JSON.parse(JSON.stringify(SEED));
+}
+function persist() { /* localStorage disabled for local file use */ }
+
+let contacts = loadContacts();
+let tab = 'all';
+let drafts = {};
+let editId = null;
+let nid = 500;
+
+// ── SCORING ──────────────────────────────────────────────────────────────────
+function score(c) {
+  let s = Math.min(c.days * 2, 40);
+  s += c.pri === 'week' ? 30 : 15;
+  s += c.stage === 'Active' ? 20 : c.stage === 'Under Contract' ? 18 : c.stage === 'First Contact' ? 12 : 5;
+  const f = (c.flag || '').toLowerCase();
+  s += f.includes('expir') || f.includes('deadline') ? 10 : f.includes('overdue') || f.includes('no show') ? 8 : f.includes('referral') || f.includes('anniversar') ? 5 : 0;
+  return Math.min(Math.round(s), 99);
+}
+function scoreCol(s) { return s >= 75 ? '#d63f3f' : s >= 50 ? '#df8b29' : '#2a8c5a'; }
+
+// ── KEY ──────────────────────────────────────────────────────────────────────
+function getKey() { try { return localStorage.getItem('sc_key') || ''; } catch { return ''; } }
+
+document.getElementById('key-go').onclick = () => {
+  const v = document.getElementById('key-input').value.trim();
+  if (!v.startsWith('sk-')) { document.getElementById('key-err').style.display = 'block'; return; }
+  try { localStorage.setItem('sc_key', v); } catch {}
+  boot();
+};
+document.getElementById('key-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('key-go').click(); });
+function resetKey() { try { localStorage.removeItem('sc_key'); } catch {} location.reload(); }
+
+function boot() {
+  document.getElementById('key-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  render();
+}
+// Skip key screen — boot directly for demo
+boot();
+
+// ── ALERTS ───────────────────────────────────────────────────────────────────
+function checkAlerts() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const items = [];
+
+  contacts.filter(c => !c.done).forEach(c => {
+    if (c.fu) {
+      const d = new Date(c.fu); d.setHours(0,0,0,0);
+      const diff = Math.round((d - today) / 86400000);
+      if (diff <= 0) items.push(`${c.name} — follow-up overdue`);
+      else if (diff <= 2) items.push(`${c.name} — follow-up in ${diff} day${diff === 1 ? '' : 's'}`);
+    }
+    if (c.date) {
+      const d = new Date(c.date);
+      const next = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+      const diff = Math.round((next - today) / 86400000);
+      if (diff >= 0 && diff <= 7) items.push(`${c.name} — birthday/anniversary in ${diff === 0 ? 'today' : diff + ' days'}`);
+    }
+  });
+
+  const banner = document.getElementById('alert-banner');
+  if (items.length) {
+    banner.innerHTML = items.slice(0, 3).map(i => `<div class="alert-row"><span class="alert-dot"></span>${i}</div>`).join('');
+    banner.classList.add('on');
+  } else {
+    banner.classList.remove('on');
+  }
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  checkAlerts();
+  document.getElementById('s-urg').textContent = contacts.filter(c => c.pri === 'week' && !c.done).length;
+  document.getElementById('s-soon').textContent = contacts.filter(c => c.pri === 'soon' && !c.done).length;
+  document.getElementById('s-done').textContent = contacts.filter(c => c.done).length;
+  document.getElementById('s-total').textContent = contacts.length;
+
+  let list = [...contacts];
+  if (tab === 'week') list = list.filter(c => c.pri === 'week' && !c.done);
+  else if (tab === 'soon') list = list.filter(c => c.pri === 'soon' && !c.done);
+  else if (tab === 'done') list = list.filter(c => c.done);
+  else list = [...list.filter(c => !c.done).sort((a,b) => score(b) - score(a)), ...list.filter(c => c.done)];
+
+  const el = document.getElementById('list');
+  if (!list.length) { el.innerHTML = '<div class="empty">No contacts here yet. Tap + to add one.</div>'; return; }
+
+  el.innerHTML = list.map(c => cardHTML(c)).join('');
+}
+
+function cardHTML(c) {
+  const sc = score(c);
+  const col = scoreCol(sc);
+  const d = drafts[c.id] || {};
+  const mode = d.mode || 'text';
+  const activeDraft = d[mode] || '';
+  const hasDraft = d.text || d.email || d.market || d.coach;
+
+  const doneLabel = c.done
+    ? `✓ ${c.doneAt ? new Date(c.doneAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'Done'}`
+    : 'Mark Done';
+
+  return `
+<div class="card ${c.done ? 'done' : c.pri === 'week' ? 'urgent' : 'soon'}" id="card-${c.id}">
+  <div class="card-head">
+    <div>
+      <div class="card-name">${esc(c.name)}</div>
+      <div class="card-meta">${esc(c.type)} · ${esc(c.stage)} · ${c.days}d ago</div>
+      ${c.phone ? `<div class="card-phone">📞 ${esc(c.phone)}</div>` : ''}
+    </div>
+    <div>
+      <span class="badge ${c.done ? 'g' : c.pri === 'week' ? 'r' : 'a'}">${c.done ? 'Done' : c.pri === 'week' ? 'Urgent' : 'Soon'}</span>
+    </div>
+  </div>
+
+  <div class="score-wrap">
+    <div class="score-bg"><div class="score-fill" style="width:${sc}%;background:${col}"></div></div>
+    <div class="score-num" style="color:${col}">Priority ${sc}</div>
+  </div>
+
+  <div class="stages">
+    ${STAGES.map(s => `<button class="sp${c.stage === s ? ' on' : ''}" onclick="setStage(${c.id},'${s}')">${s}</button>`).join('')}
+  </div>
+
+  <div class="flag ${c.done ? 'g' : c.pri === 'week' ? 'r' : ''}">
+    ${c.done ? '✓' : '⚡'} ${esc(c.flag)}
+  </div>
+
+  <div class="fu-row">
+    🗓 Follow-up: <input type="date" value="${c.fu || ''}" onchange="setFU(${c.id},this.value)">
+  </div>
+
+  <div class="acts">
+    <button class="ab primary" id="btn-${c.id}" onclick="genDraft(${c.id})">✨ AI Draft</button>
+    ${c.phone ? `<a class="ab call" href="tel:${c.phone.replace(/\D/g,'')}">📞 Call</a>` : ''}
+    <button class="ab mark${c.done ? ' on' : ''}" onclick="toggleDone(${c.id})">${doneLabel}</button>
+    <button class="ab edit" onclick="openModal(${c.id})">✏️</button>
+  </div>
+
+  <div class="acts" style="padding-top:0">
+    ${c.date ? `<button class="ab anniv" id="anniv-${c.id}" onclick="sendAnniv(${c.id})">🎉 Anniversary</button>` : ''}
+    <button class="ab market" id="mkt-${c.id}" onclick="genMarket(${c.id})">📊 Market</button>
+    <button class="ab coach" onclick="toggleCoach(${c.id})">💬 Coach</button>
+  </div>
+
+  <div class="obj-row${d.objOpen ? ' on' : ''}" id="obj-${c.id}">
+    <input class="obj-in" id="oi-${c.id}" placeholder="What did the client say?">
+    <button class="obj-go" id="og-${c.id}" onclick="submitCoach(${c.id})">Coach</button>
+  </div>
+
+  ${hasDraft ? `
+  <div class="draft-tabs">
+    ${d.text ? `<button class="dt${mode === 'text' ? ' on' : ''}" onclick="setMode(${c.id},'text')">Text</button>` : ''}
+    ${d.email ? `<button class="dt${mode === 'email' ? ' on' : ''}" onclick="setMode(${c.id},'email')">Email</button>` : ''}
+    ${d.market ? `<button class="dt${mode === 'market' ? ' on' : ''}" onclick="setMode(${c.id},'market')">Market</button>` : ''}
+    ${d.anniv ? `<button class="dt${mode === 'anniv' ? ' on' : ''}" onclick="setMode(${c.id},'anniv')">🎉 Anniv</button>` : ''}
+    ${d.coach ? `<button class="dt${mode === 'coach' ? ' on' : ''}" onclick="setMode(${c.id},'coach')">Coach</button>` : ''}
+  </div>` : ''}
+
+  <div class="draft-out${activeDraft ? ' on' : ''}" id="dout-${c.id}">
+    ${esc(activeDraft)}
+    ${activeDraft ? `
+    <br>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+      <button class="copy-btn" onclick="copyDraft(${c.id})">Copy</button>
+      ${c.email ? `<button class="copy-btn" style="color:#0369a1;background:none;border:none;cursor:pointer;text-decoration:underline;font-size:11px;font-weight:600;padding:0;" onclick="sendEmail(${c.id})">Send via Email ↗</button>` : ''}
+      ${c.phone ? `<button class="copy-btn" style="color:#2a8c5a;background:none;border:none;cursor:pointer;text-decoration:underline;font-size:11px;font-weight:600;padding:0;" onclick="sendText(${c.id})">Send via Text ↗</button>` : ''}
+    </div>` : ''}
+  </div>
+</div>`;
+}
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── ACTIONS ──────────────────────────────────────────────────────────────────
+function setTab(t, el) {
+  tab = t;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  render();
+}
+
+function setStage(id, stage) {
+  const c = contacts.find(x => x.id === id);
+  if (c) { c.stage = stage; persist(); render(); }
+}
+
+function setFU(id, val) {
+  const c = contacts.find(x => x.id === id);
+  if (c) { c.fu = val; persist(); checkAlerts(); }
+}
+
+function toggleDone(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  c.done = !c.done;
+  c.doneAt = c.done ? Date.now() : null;
+  persist(); render();
+}
+
+function setMode(id, mode) {
+  if (!drafts[id]) drafts[id] = {};
+  drafts[id].mode = mode;
+  render();
+}
+
+function toggleCoach(id) {
+  if (!drafts[id]) drafts[id] = {};
+  drafts[id].objOpen = !drafts[id].objOpen;
+  render();
+  if (drafts[id].objOpen) setTimeout(() => document.getElementById('oi-' + id)?.focus(), 80);
+}
+
+// ── API ──────────────────────────────────────────────────────────────────────
+async function api(prompt, max) {
+  const key = getKey();
+  if (!key) {
+    // Demo fallback — no key required
+    if (prompt.includes('TEXT MESSAGE')) return `Hey, just checking in — wanted to make sure you're still feeling good about everything on your end. Happy to jump on a quick call this week if anything's come up. Let me know!`;
+    if (prompt.includes('EMAIL')) return `Subject: Checking in\n\nHi,\n\nJust wanted to touch base and see how things are going on your end. I know things can move quickly and I want to make sure you feel supported through the process.\n\nLet me know if you have any questions or if there's a good time to connect this week.\n\nLooking forward to hearing from you!`;
+    if (prompt.includes('market update')) return `Rates have been holding steady this week, which is good news for buyers still on the fence. Inventory in your target area is tightening — homes under $500K are moving faster than they were last month. Are you seeing anything specific in the neighborhoods you're watching?`;
+    return `1. "That's a really fair concern — a lot of my clients feel the same way at first. What I've found is that once we take one small step together, things start to feel much more manageable. Want to try that?"\n\n2. "I hear you, and I don't want to rush anything. Can I just share one thing that might change how you're thinking about this?"\n\n3. "You're not alone in feeling that way. Let's slow down and make sure you have everything you need to feel confident before we move forward."`;
+  }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: max || 400,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const rawText = await res.text();
+  let data;
+  try { data = JSON.parse(rawText); } catch(e) { throw new Error('Parse failed: ' + rawText.slice(0,120)); }
+  if (!res.ok || data.error) throw new Error(data?.error?.message || 'HTTP ' + res.status);
+  if (!data.content?.[0]?.text) throw new Error('No content. Type: ' + data.content?.[0]?.type + ' Stop: ' + data.stop_reason);
+  return data.content[0].text;
+}
+
+// ── AI FEATURES ──────────────────────────────────────────────────────────────
+async function genDraft(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  if (!drafts[id]) drafts[id] = {};
+  const btn = document.getElementById('btn-' + id);
+  if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
+
+  try {
+    const [text, email] = await Promise.all([
+      api(`Write a warm natural follow-up TEXT MESSAGE (2-3 sentences) for a real estate client.
+Name: ${c.name} | Type: ${c.type} | Stage: ${c.stage} | Days since contact: ${c.days} | Situation: ${c.flag}
+Be human not salesy. Reference their situation naturally. End with a soft call to action. Plain text only.`, 200),
+      api(`Write a professional follow-up EMAIL for a real estate client.
+Format exactly as:
+Subject: [subject line here]
+
+[email body - 3 to 4 sentences]
+
+Name: ${c.name} | Type: ${c.type} | Stage: ${c.stage} | Days since contact: ${c.days} | Situation: ${c.flag}
+Warm but professional tone. Reference their situation. Clear call to action. Plain text only.`, 400)
+    ]);
+    drafts[id].text = text;
+    drafts[id].email = email;
+    drafts[id].mode = 'text';
+    render();
+  } catch (e) {
+    if (!drafts[id]) drafts[id] = {};
+    drafts[id].text = 'Error: ' + e.message;
+    drafts[id].mode = 'text';
+    render();
+  }
+
+  const btn2 = document.getElementById('btn-' + id);
+  if (btn2) { btn2.disabled = false; btn2.textContent = '✨ AI Draft'; }
+}
+
+async function genMarket(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  if (!drafts[id]) drafts[id] = {};
+  const btn = document.getElementById('mkt-' + id);
+  if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
+
+  try {
+    const text = await api(`Write a short personalized market update message (3-4 sentences) for a real estate client.
+Client: ${c.name} | Type: ${c.type} | Stage: ${c.stage}
+Make it relevant to a ${c.type} in the ${c.stage} stage. Reference current market conditions like inventory levels, mortgage rates, and competition. End with a question to keep the conversation going. Sound conversational, not like a newsletter. Plain text only.`, 300);
+    drafts[id].market = text;
+    drafts[id].mode = 'market';
+    render();
+  } catch (e) {
+    drafts[id].market = 'Error: ' + e.message;
+    drafts[id].mode = 'market';
+    render();
+  }
+
+  const btn2 = document.getElementById('mkt-' + id);
+  if (btn2) { btn2.disabled = false; btn2.textContent = '📊 Market Pulse'; }
+}
+
+async function submitCoach(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  const inp = document.getElementById('oi-' + id);
+  const objection = (inp?.value || '').trim();
+  if (!objection) { inp?.focus(); return; }
+  if (!drafts[id]) drafts[id] = {};
+  const btn = document.getElementById('og-' + id);
+  if (btn) { btn.disabled = true; btn.textContent = 'Thinking…'; }
+  if (inp) inp.disabled = true;
+
+  try {
+    const text = await api(`You are a real estate coach. A client named ${c.name} (${c.type}, stage: ${c.stage}) said:
+"${objection}"
+
+Give the agent exactly 3 response options. Number them 1. 2. 3.
+Each response should: acknowledge the concern with empathy, gently reframe it, and move toward next steps.
+Keep each response under 3 sentences. Be warm and conversational.`, 500);
+    drafts[id].coach = text;
+    drafts[id].objOpen = false;
+    drafts[id].mode = 'coach';
+    render();
+  } catch (e) {
+    drafts[id].coach = 'Error: ' + e.message;
+    drafts[id].objOpen = false;
+    drafts[id].mode = 'coach';
+    render();
+  }
+}
+
+function sendEmail(id) {
+  const c = contacts.find(x => x.id === id);
+  const d = drafts[id] || {};
+  const mode = d.mode || 'text';
+  const body = d[mode] || '';
+  if (!c?.email) return;
+  let subject = 'Checking in';
+  if (mode === 'email') {
+    const firstLine = body.split('\n')[0];
+    if (firstLine.toLowerCase().startsWith('subject:')) {
+      subject = firstLine.replace(/^subject:\s*/i, '').trim();
+    }
+  }
+  const mailBody = mode === 'email' ? body.replace(/^subject:.*\n\n?/i, '') : body;
+  window.location.href = `mailto:${c.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`;
+}
+
+function sendText(id) {
+  const c = contacts.find(x => x.id === id);
+  const d = drafts[id] || {};
+  const mode = d.mode || 'text';
+  const body = d[mode] || '';
+  if (!c?.phone) return;
+  const phone = c.phone.replace(/\D/g, '');
+  window.location.href = `sms:${phone}&body=${encodeURIComponent(body)}`;
+}
+
+function copyDraft(id) {
+  const d = drafts[id] || {};
+  const mode = d.mode || 'text';
+  const text = d[mode] || '';
+  navigator.clipboard.writeText(text).catch(() => {});
+  const btn = event?.target;
+  if (btn) { btn.textContent = 'Copied!'; setTimeout(() => { if (btn) btn.textContent = 'Copy'; }, 1500); }
+}
+
+// ── ANNIVERSARY ───────────────────────────────────────────────────────────────
+async function sendAnniv(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  if (!drafts[id]) drafts[id] = {};
+  const btn = document.getElementById('anniv-' + id);
+  if (btn) { btn.disabled = true; btn.textContent = 'Drafting…'; }
+
+  try {
+    const text = await api(`Write a warm, brief anniversary or birthday message for a real estate client.
+Name: ${c.name} | Type: ${c.type} | Relationship: past/current client
+Keep it genuine, personal, and under 3 sentences. Do NOT make it salesy. Just celebrate them.
+Plain text only. No subject line.`, 150);
+    drafts[id].anniv = text;
+    drafts[id].mode = 'anniv';
+    render();
+  } catch(e) {
+    drafts[id].anniv = `Happy anniversary! I was just thinking of you and wanted to reach out. Wishing you all the best today and always!`;
+    drafts[id].mode = 'anniv';
+    render();
+  }
+
+  const btn2 = document.getElementById('anniv-' + id);
+  if (btn2) { btn2.disabled = false; btn2.textContent = '🎉 Anniversary'; }
+}
+
+// ── DAILY DIGEST ─────────────────────────────────────────────────────────────
+function openDigest() {
+  document.getElementById('digest-overlay').classList.add('on');
+  buildDigest();
+}
+function closeDigest() { document.getElementById('digest-overlay').classList.remove('on'); }
+function bgCloseDigest(e) { if (e.target === document.getElementById('digest-overlay')) closeDigest(); }
+function copyDigest() {
+  const text = document.getElementById('digest-content').innerText;
+  navigator.clipboard.writeText(text).catch(() => {});
+  const btn = event?.target;
+  if (btn) { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = 'Copy Digest'; }, 1800); }
+}
+
+function buildDigest() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const urgent = contacts.filter(c => c.pri === 'week' && !c.done);
+  const soon = contacts.filter(c => c.pri === 'soon' && !c.done);
+
+  const annivToday = contacts.filter(c => {
+    if (!c.date) return false;
+    const d = new Date(c.date);
+    return d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
+  });
+
+  const overdue = contacts.filter(c => {
+    if (!c.fu || c.done) return false;
+    const d = new Date(c.fu); d.setHours(0,0,0,0);
+    return d <= today;
+  });
+
+  const lines = [];
+  lines.push(`📋 SMARTCONTACT DAILY DIGEST`);
+  lines.push(`${today.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}`);
+  lines.push('');
+
+  if (annivToday.length) {
+    lines.push(`🎉 ANNIVERSARIES / BIRTHDAYS TODAY`);
+    annivToday.forEach(c => lines.push(`  • ${c.name} — reach out today!`));
+    lines.push('');
+  }
+
+  if (overdue.length) {
+    lines.push(`⚠️ OVERDUE FOLLOW-UPS`);
+    overdue.forEach(c => lines.push(`  • ${c.name} — was due ${new Date(c.fu).toLocaleDateString('en-US',{month:'short',day:'numeric'})}`));
+    lines.push('');
+  }
+
+  lines.push(`🔴 URGENT THIS WEEK (${urgent.length})`);
+  if (urgent.length) urgent.forEach(c => lines.push(`  • ${c.name} — ${c.flag}`));
+  else lines.push('  None — you\'re caught up!');
+  lines.push('');
+
+  lines.push(`🟡 COMING SOON (${soon.length})`);
+  if (soon.length) soon.slice(0,5).forEach(c => lines.push(`  • ${c.name} — ${c.flag}`));
+  else lines.push('  None');
+  lines.push('');
+
+  lines.push(`✅ COMPLETED TODAY: ${contacts.filter(c => c.done && c.doneAt && (Date.now()-c.doneAt)<86400000).length}`);
+  lines.push('');
+  lines.push('— Powered by SmartContact · Willow Properties · Erika');
+
+  document.getElementById('digest-content').textContent = lines.join('\n');
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(id) {
+  editId = id;
+  const c = id ? contacts.find(x => x.id === id) : null;
+  document.getElementById('modal-title').textContent = c ? 'Edit Contact' : 'Add Contact';
+  document.getElementById('m-name').value = c?.name || '';
+  document.getElementById('m-phone').value = c?.phone || '';
+  document.getElementById('m-email').value = c?.email || '';
+  document.getElementById('m-type').value = c?.type || 'Active Buyer';
+  document.getElementById('m-stage').value = c?.stage || 'First Contact';
+  document.getElementById('m-days').value = c?.days ?? '';
+  document.getElementById('m-pri').value = c?.pri || 'week';
+  document.getElementById('m-flag').value = c?.flag || '';
+  document.getElementById('m-date').value = c?.date || '';
+  document.getElementById('m-del').style.display = c ? 'block' : 'none';
+  document.getElementById('overlay').classList.add('on');
+  setTimeout(() => document.getElementById('m-name').focus(), 80);
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('on');
+  editId = null;
+}
+
+function bgClose(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+function saveModal() {
+  const name = document.getElementById('m-name').value.trim();
+  if (!name) { document.getElementById('m-name').focus(); return; }
+  const data = {
+    name,
+    phone: document.getElementById('m-phone').value.trim(),
+    email: document.getElementById('m-email').value.trim(),
+    type: document.getElementById('m-type').value,
+    stage: document.getElementById('m-stage').value,
+    days: parseInt(document.getElementById('m-days').value) || 0,
+    pri: document.getElementById('m-pri').value,
+    flag: document.getElementById('m-flag').value.trim() || 'Follow up needed',
+    date: document.getElementById('m-date').value,
+  };
+  if (editId) {
+    const c = contacts.find(x => x.id === editId);
+    if (c) Object.assign(c, data);
+  } else {
+    contacts.unshift({ id: nid++, ...data, fu: '', done: false, doneAt: null });
+  }
+  persist(); closeModal(); render();
+}
+
+function deleteContact() {
+  if (!editId) return;
+  if (!confirm('Delete this contact? This cannot be undone.')) return;
+  contacts = contacts.filter(x => x.id !== editId);
+  persist(); closeModal(); render();
+}
+
+// ── EXPORT / IMPORT ──────────────────────────────────────────────────────────
+function exportCSV() {
+  const headers = ['Name','Phone','Email','Type','Stage','Days','Priority','Flag','Date','Followup','Done','DoneAt'];
+  const rows = contacts.map(c => [
+    `"${(c.name||'').replace(/"/g,'""')}"`,
+    `"${c.phone||''}"`,
+    `"${c.email||''}"`,
+    `"${c.type||''}"`,
+    `"${c.stage||''}"`,
+    c.days || 0,
+    `"${c.pri||'soon'}"`,
+    `"${(c.flag||'').replace(/"/g,'""')}"`,
+    `"${c.date||''}"`,
+    `"${c.fu||''}"`,
+    c.done ? 1 : 0,
+    `"${c.doneAt ? new Date(c.doneAt).toISOString() : ''}"`
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'SmartContact_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importCSV(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const lines = ev.target.result.split('\n').filter(l => l.trim());
+      const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim().toLowerCase());
+      const imported = lines.slice(1).map(line => {
+        const vals = [];
+        let cur = '', inQ = false;
+        for (const ch of line) {
+          if (ch === '"') { inQ = !inQ; }
+          else if (ch === ',' && !inQ) { vals.push(cur); cur = ''; }
+          else { cur += ch; }
+        }
+        vals.push(cur);
+        const get = key => (vals[headers.indexOf(key)] || '').replace(/"/g,'').trim();
+        return {
+          id: nid++,
+          name: get('name') || 'Unknown',
+          phone: get('phone'), email: get('email'),
+          type: get('type') || 'Contact',
+          stage: get('stage') || 'First Contact',
+          days: parseInt(get('days')) || 0,
+          pri: get('priority') === 'week' ? 'week' : 'soon',
+          flag: get('flag') || 'Follow up needed',
+          date: get('date'), fu: get('followup'),
+          done: get('done') === '1',
+          doneAt: get('doneat') ? new Date(get('doneat')).getTime() : null
+        };
+      }).filter(c => c.name && c.name !== 'Name');
+
+      if (!imported.length) { alert('No contacts found in file.'); return; }
+      if (confirm(`Import ${imported.length} contact${imported.length === 1 ? '' : 's'}? They will be added to your existing list.`)) {
+        contacts = [...imported, ...contacts];
+        persist(); render();
+        alert(`Imported ${imported.length} contact${imported.length === 1 ? '' : 's'}.`);
+      }
+    } catch (err) { alert('Import failed: ' + err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+</script>
+</body>
+</html>
